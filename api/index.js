@@ -1,12 +1,19 @@
 const { ApolloServer, gql } = require("apollo-server");
 
 const typeDefs = gql`
+  enum Location {
+    STORAGE_UNIT
+    BORROWED
+    APPARTMENT
+  }
+
   type Possession {
     id: ID!
     name: String!
     description: String
     price: Int
     images: [Image]
+    location: Location
   }
 
   type Query {
@@ -15,6 +22,7 @@ const typeDefs = gql`
 
   type Image {
     id: ID!
+    description: String
     apearsIn: [Possession]!
   }
 `;
@@ -34,7 +42,8 @@ const possessions = [
     name: "Powerspec g**",
     description: "todo: write a description",
     price: 750,
-    images: [images[0]],
+    images: [images[0], images[1]],
+    location: "APPARTMENT",
   },
   {
     id: 2,
@@ -42,6 +51,7 @@ const possessions = [
     description: "todo: write a description",
     price: 50,
     images: [images[1]],
+    location: "APPARTMENT",
   },
 ];
 
