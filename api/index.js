@@ -12,41 +12,45 @@ const typeDefs = gql`
     name: String!
     description: String
     price: Int
-    images: [Image]
-    location: Location
+    images: [Image!]!
+    location: Location!
   }
 
   type Query {
     possessions: [Possession]
+    possession(id: ID): Possession
   }
 
   type Image {
     id: ID!
     description: String
-    apearsIn: [Possession]!
+    # todo: figure out how to upload images
+    apearsIn: [Possession]
   }
 `;
 
 const images = [
   {
-    id: 3,
+    id: "3",
+    description: "Image 3",
   },
   {
-    id: 4,
+    id: "4",
+    description: "Image 4",
   },
 ];
 
 const possessions = [
   {
-    id: 1,
+    id: "1",
     name: "Powerspec g**",
     description: "todo: write a description",
     price: 750,
-    images: [images[0], images[1]],
+    images: [images[0]],
     location: "APPARTMENT",
   },
   {
-    id: 2,
+    id: "2",
     name: "Ikea Chair",
     description: "todo: write a description",
     price: 50,
@@ -59,6 +63,11 @@ const resolvers = {
   Query: {
     possessions: () => {
       return possessions;
+    },
+    possession: (obj, args, context, info) => {
+      return (possession = possessions.find(
+        (possession) => args.id === possession.id
+      ));
     },
   },
 };
