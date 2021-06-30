@@ -72,6 +72,7 @@ const resolvers = {
   },
 };
 
+// pull out introspection true and playground true before real deploy
 const server = new ApolloServer({ typeDefs, resolvers, introspection: true, playground: true });
 
 server
