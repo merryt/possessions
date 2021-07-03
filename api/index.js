@@ -25,6 +25,16 @@ const typeDefs = gql`
     possession(id: ID): Possession
   }
 
+  type Mutation {
+    addPossession(
+      name: String!
+      description: String
+      price: Int
+      location: Location!
+      postedDate: Date
+    ): [Possession]
+  }
+
   type Image {
     id: ID!
     description: String
@@ -50,7 +60,7 @@ const possessions = [
     name: "Powerspec g**",
     description: "todo: write a description",
     price: 750,
-    images: [images[0]],
+    images: [{ id: "3" }, { id: "4" }],
     location: "APPARTMENT",
     postedDate: new Date("7-1-2021"),
   },
@@ -59,7 +69,7 @@ const possessions = [
     name: "Ikea Chair",
     description: "todo: write a description",
     price: 50,
-    images: [images[1]],
+    images: [{ id: "3" }],
     location: "APPARTMENT",
     postedDate: new Date("7-2-2021"),
   },
@@ -70,12 +80,31 @@ const resolvers = {
     possessions: () => {
       return possessions;
     },
-    possession: (obj, args, context, info) => {
+    possession: (_obj, args, _context, _info) => {
       return (possession = possessions.find(
         (possession) => args.id === possession.id
       ));
     },
   },
+  Possession: {
+    images: (obj, _args, _context, _info) => {
+      const imageIds = obj.images.map((image) => image.id);
+      const filteredImages = images.filter((image) => {
+        return imageIds.includes(image.id);
+      });
+
+      return filteredImages;
+    },
+  },
+
+  Mutation: {
+    addPossession: (obj, args, context, info) => {
+      console.log(args);
+      const newPossessionsList = [...possessions, args];
+      return newPossessionsList;
+    },
+  },
+
   Date: new GraphQLScalarType({
     name: "Date",
     description: "It is a date",
