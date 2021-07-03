@@ -1,6 +1,9 @@
 const { ApolloServer, gql } = require("apollo-server");
-
+const { GraphQLScalarType } = require("graphql");
+const { Kind } = require("graphql/language");
 const typeDefs = gql`
+  scalar Date
+
   enum Location {
     STORAGE_UNIT
     BORROWED
@@ -14,6 +17,7 @@ const typeDefs = gql`
     price: Int
     images: [Image!]!
     location: Location!
+    postedDate: Date
   }
 
   type Query {
@@ -48,6 +52,7 @@ const possessions = [
     price: 750,
     images: [images[0]],
     location: "APPARTMENT",
+    postedDate: new Date("7-1-2021"),
   },
   {
     id: "2",
@@ -56,6 +61,7 @@ const possessions = [
     price: 50,
     images: [images[1]],
     location: "APPARTMENT",
+    postedDate: new Date("7-2-2021"),
   },
 ];
 
@@ -70,10 +76,32 @@ const resolvers = {
       ));
     },
   },
+  Date: new GraphQLScalarType({
+    name: "Date",
+    description: "It is a date",
+    parseValue(value) {
+      // value from the client
+      return new Date(value);
+    },
+    serialize(value) {
+      return value.getTime();
+    },
+    parseLiteral(ast) {
+      if (ast.kind === Kind.INT) {
+        return new Date(ast.value);
+      }
+      return null;
+    },
+  }),
 };
 
 // pull out introspection true and playground true before real deploy
-const server = new ApolloServer({ typeDefs, resolvers, introspection: true, playground: true });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+  playground: true,
+});
 
 server
   .listen({
