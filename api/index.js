@@ -12,7 +12,7 @@ const typeDefs = gql`
 
   type Possession {
     id: ID!
-    name: String!
+    name: String
     description: String
     price: Int
     images: [Image!]!
@@ -25,21 +25,29 @@ const typeDefs = gql`
     possession(id: ID): Possession
   }
 
+  input ImageInput {
+    id: ID!
+    description: String
+    # todo, probably going to want this to include an image
+  }
+
+  input PossessionInput {
+    name: String!
+    description: String
+    price: Int!
+    location: Location!
+    postedDate: Date
+    images: [ImageInput]
+  }
+
   type Mutation {
-    addPossession(
-      name: String!
-      description: String
-      price: Int
-      location: Location!
-      postedDate: Date
-    ): [Possession]
+    addPossession(possession: PossessionInput): [Possession]
   }
 
   type Image {
     id: ID!
     description: String
     # todo: figure out how to upload images
-    apearsIn: [Possession]
   }
 `;
 
@@ -98,9 +106,9 @@ const resolvers = {
   },
 
   Mutation: {
-    addPossession: (obj, args, context, info) => {
-      console.log(args);
-      const newPossessionsList = [...possessions, args];
+    addPossession: (_obj, { possession }, _context, _info) => {
+      // create new id and date for possession getting added
+      const newPossessionsList = [...possessions, possession];
       return newPossessionsList;
     },
   },
