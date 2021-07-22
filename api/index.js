@@ -1,6 +1,15 @@
+require("dotenv").config();
 const { ApolloServer, gql } = require("apollo-server");
 const { GraphQLScalarType } = require("graphql");
 const { Kind } = require("graphql/language");
+
+const mongoose = require("mongoose");
+mongoose.connect(
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@realmcluster.rmvdh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
+  { userNewUrlParser: true }
+);
+const db = mongoose.connection;
+
 const typeDefs = gql`
   scalar Date
 
@@ -140,10 +149,15 @@ const server = new ApolloServer({
   playground: true,
 });
 
-server
-  .listen({
-    port: process.env.PORT || 4000,
-  })
-  .then(({ url }) => {
-    console.log(`server started at ${url}`);
-  });
+db.on("error", console.error.bind(console), "connection error:");
+db.once("open", function () {
+  console.log("db is connected");
+
+  server
+    .listen({
+      port: process.env.PORT || 4000,
+    })
+    .then(({ url }) => {
+      console.log(`server started at ${url}`);
+    });
+});
