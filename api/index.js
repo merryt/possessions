@@ -10,6 +10,17 @@ mongoose.connect(
 );
 const db = mongoose.connection;
 
+var possessionSchema = new mongoose.Schema({
+  name: String,
+  description: String,
+  price: Number,
+  imageIds: [String],
+  location: String,
+  postedDate: Date,
+});
+
+const Possession = mongoose.model("movie", possessionSchema);
+
 const typeDefs = gql`
   scalar Date
 
@@ -94,13 +105,21 @@ const possessions = [
 
 const resolvers = {
   Query: {
-    possessions: () => {
-      return possessions;
+    possessions: async () => {
+      try {
+        return await Possession.find();
+      } catch (e) {
+        console.log(e);
+        return [];
+      }
     },
-    possession: (_obj, args, _context, _info) => {
-      return (possession = possessions.find(
-        (possession) => args.id === possession.id
-      ));
+    possession: async (_obj, args, _context, _info) => {
+      try {
+        return await Possession.findById(args.id);
+      } catch (e) {
+        console.log(e);
+        return [];
+      }
     },
   },
   Possession: {
@@ -115,10 +134,18 @@ const resolvers = {
   },
 
   Mutation: {
-    addPossession: (_obj, { possession }, _context, _info) => {
+    addPossession: async (_obj, { possession }, _context, _info) => {
+      try {
+        await Possession.create({
+          ...possession,
+        });
+
+        return await Possession.find();
+      } catch (e) {
+        console.log(e);
+        return [];
+      }
       // create new id and date for possession getting added
-      const newPossessionsList = [...possessions, possession];
-      return newPossessionsList;
     },
   },
 
