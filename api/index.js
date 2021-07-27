@@ -4,6 +4,8 @@ const { GraphQLScalarType } = require("graphql");
 const { Kind } = require("graphql/language");
 
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
 mongoose.connect(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@realmcluster.rmvdh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
   { userNewUrlParser: true }
@@ -14,12 +16,18 @@ var possessionSchema = new mongoose.Schema({
   name: String,
   description: String,
   price: Number,
-  imageIds: [String],
+  images: [{ type: Schema.Types.ObjectId, ref: "Image" }],
   location: String,
   postedDate: Date,
 });
 
-const Possession = mongoose.model("movie", possessionSchema);
+var imageSchema = new mongoose.Schema({
+  description: String,
+  url: String,
+});
+
+const Possession = mongoose.model("Possession", possessionSchema);
+const Image = mongoose.model("Image", imageSchema);
 
 const typeDefs = gql`
   scalar Date
@@ -35,7 +43,7 @@ const typeDefs = gql`
     name: String
     description: String
     price: Int
-    images: [Image!]!
+    images: [Image]
     location: Location!
     postedDate: Date
   }
@@ -46,9 +54,8 @@ const typeDefs = gql`
   }
 
   input ImageInput {
-    id: ID!
     description: String
-    # todo, probably going to want this to include an image
+    url: String
   }
 
   input PossessionInput {
@@ -62,46 +69,15 @@ const typeDefs = gql`
 
   type Mutation {
     addPossession(possession: PossessionInput): [Possession]
+    addImage(image: ImageInput): [Image]
   }
 
   type Image {
     id: ID!
     description: String
-    # todo: figure out how to upload images
+    url: String!
   }
 `;
-
-const images = [
-  {
-    id: "3",
-    description: "Image 3",
-  },
-  {
-    id: "4",
-    description: "Image 4",
-  },
-];
-
-const possessions = [
-  {
-    id: "1",
-    name: "Powerspec g**",
-    description: "todo: write a description",
-    price: 750,
-    images: [{ id: "3" }, { id: "4" }],
-    location: "APPARTMENT",
-    postedDate: new Date("7-1-2021"),
-  },
-  {
-    id: "2",
-    name: "Ikea Chair",
-    description: "todo: write a description",
-    price: 50,
-    images: [{ id: "3" }],
-    location: "APPARTMENT",
-    postedDate: new Date("7-2-2021"),
-  },
-];
 
 const resolvers = {
   Query: {
@@ -123,10 +99,13 @@ const resolvers = {
     },
   },
   Possession: {
-    images: (obj, _args, _context, _info) => {
-      const imageIds = obj.images.map((image) => image.id);
-      const filteredImages = images.filter((image) => {
-        return imageIds.includes(image.id);
+    images: async (obj, _args, _context, _info) => {
+      if (!obj.images) {
+        return [];
+      }
+
+      const filteredImages = await obj.images.map(async (image) => {
+        return await Image.findById(image);
       });
 
       return filteredImages;
@@ -136,10 +115,14 @@ const resolvers = {
   Mutation: {
     addPossession: async (_obj, { possession }, _context, _info) => {
       try {
-        await Possession.create({
-          ...possession,
-        });
+        images = [];
+        for (image of possession.images) {
+          createdImage = await Image.create(image);
+          images.push(createdImage._id);
+        }
+        possession.images = images;
 
+        await Possession.create(possession);
         return await Possession.find();
       } catch (e) {
         console.log(e);

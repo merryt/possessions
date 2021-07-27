@@ -9,3 +9,59 @@ TODO:
 
 - Setup docker for local dev.
 - Build front end
+- Performance wise I don't like how its going to the database to find every image...
+- Add image upload ability
+
+Sample mutation for adding possessions
+
+```
+mutation{
+  addPossession(possession:{name: "chair",price: 10, location: STORAGE_UNIT, description: "It's a chair!", images:[
+    	{ description: "picture of desk", url: "https://3.bp.blogspot.com/-DZFnyzm65yA/UrB6z86DY5I/AAAAAAAAH3E/W8-EjkjjuOw/s1600/Orange_Tweed_Danish_Lounge_Chair_6.JPG"},
+  	]}){
+    name
+    description
+    location
+    price
+    images{
+      url
+      description
+    }
+  }
+}
+```
+
+sample querys for possessions
+
+```
+query{
+  possession(id: "60fb42a6cc07cd9c3407443c"){
+    name
+    description
+    location
+    price
+    id
+    images{
+      description
+      url
+    }
+  }
+}
+
+```
+
+```
+query{
+  possessions{
+    name
+    description
+    location
+    price
+    id
+    images{
+      description
+      url
+    }
+  }
+}
+```

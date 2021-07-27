@@ -1,0 +1,25 @@
+[
+  {
+    "name": "possessions",
+    "path": "/possessions",
+    "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\possessions.vue",
+    "chunkName": "pages/possessions",
+    "children": [
+      {
+        "name": "possessions-id",
+        "path": ":id?",
+        "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\possessions\\\\_id.vue",
+        "chunkName": "pages/possessions/_id",
+        "_name": "_4a94f72e"
+      }
+    ],
+    "_name": "_ddb2b0be"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_3952db02"
+  }
+]
