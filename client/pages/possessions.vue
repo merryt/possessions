@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Randi and Tylers things</h1>
+    <header><h1>All our stuff</h1></header>
     <div v-if="!$apollo.queries.possessions.loading" class="container">
       <div class="sidebar">
         <h3>All Our stuff</h3>
@@ -16,13 +16,6 @@
     </div>
   </div>
 </template>
-
-<style scoped>
-.container {
-  display: grid;
-  grid-template-columns: 200px 3fr;
-}
-</style>
 
 <script>
 import gql from 'graphql-tag'
@@ -47,3 +40,15 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.container {
+  display: grid;
+  grid-template-columns: 200px 3fr;
+}
+header {
+  margin: -20px -10px 0 -10px;
+  padding: 0 15px;
+  background-color: #eee;
+}
+</style>
