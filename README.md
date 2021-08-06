@@ -8,9 +8,10 @@ To run, use `docker-compose up` (app uses port 4000)
 TODO:
 
 - Setup docker for local dev.
-- Build front end
 - Performance wise I don't like how its going to the database to find every image...
 - Add image upload ability
+- Switch nuxt to vite-nuxt instead of webpack
+- Ponder splitting this repo into two and hosting client in netlify or something
 
 Sample mutation for adding possessions
 
