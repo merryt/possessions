@@ -27,7 +27,8 @@
       />
     </div>
     <button @click="images += 1">add image</button>
-    <input @change="upload" type="file" />
+    <!-- <input @change="upload" type="file" />
+    {{ imgData }} -->
     <button @click="addPossession" class="bigBtn">Submit</button>
   </div>
 </template>
@@ -42,6 +43,7 @@ export default {
       name: '',
       description: '',
       price: '',
+      imgData: '',
     }
   },
   methods: {
@@ -51,21 +53,25 @@ export default {
       }
       console.log(files)
 
-      this.$apollo.mutate({
-        mutation: gql`
-          mutation uploadPhoto($image: Upload!) {
-            addImage(image: $image) {
-              id
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation uploadPhoto($image: Upload!) {
+              addImage(image: $image) {
+                filename
+              }
             }
-          }
-        `,
-        variables: {
-          image: files[0],
-        },
-        context: {
-          hasUpload: true,
-        },
-      })
+          `,
+          variables: {
+            image: files[0],
+          },
+          context: {
+            hasUpload: true,
+          },
+        })
+        .then(({ data }) => {
+          this.imgData = data
+        })
     },
     addPossession() {
       this.$apollo.mutate({

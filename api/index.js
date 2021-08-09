@@ -147,7 +147,7 @@ const resolvers = {
         stream.pipe(out);
         await finished(out);
 
-        return { filename, mimetype, encoding };
+        return [{ filename, mimetype, encoding }];
       } catch (e) {
         console.log(e);
         return {};
