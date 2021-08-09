@@ -113,6 +113,10 @@ const resolvers = {
 
   Mutation: {
     addPossession: async (_obj, { possession }, _context, _info) => {
+      console.log("================");
+      console.log(possession);
+      console.log("================");
+
       try {
         images = [];
         for (image of possession.images) {
@@ -133,10 +137,6 @@ const resolvers = {
       try {
         const { createReadStream, filename, mimetype, encoding } =
           await image.file;
-        console.log("================");
-        console.log(image);
-        console.log("================");
-        console.log(createReadStream, filename, mimetype, encoding);
 
         const stream = createReadStream();
 

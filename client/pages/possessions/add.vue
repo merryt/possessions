@@ -20,13 +20,14 @@
     ></textarea>
     <div class="images">
       <input
-        v-for="image in images"
-        v-bind:key="image"
-        @change="upload"
+        v-for="(image, index) in images"
+        v-bind:key="index"
+        :data-index="index"
+        @change="updateImage"
         type="file"
       />
     </div>
-    <button @click="images += 1">add image</button>
+    <button @click="images.push({})">add image</button>
     <!-- <input @change="upload" type="file" />
     {{ imgData }} -->
     <button @click="addPossession" class="bigBtn">Submit</button>
@@ -39,7 +40,7 @@ import gql from 'graphql-tag'
 export default {
   data() {
     return {
-      images: 1,
+      images: [{}],
       name: '',
       description: '',
       price: '',
@@ -73,14 +74,19 @@ export default {
           this.imgData = data
         })
     },
+    updateImage({ target }) {
+      this.images[target.getAttribute('data-index')] = target.files[0]
+      console.log(target.files[0])
+    },
     addPossession() {
+      console.log(this.images)
       this.$apollo.mutate({
         mutation: gql`
           mutation createPossession(
             $name: String!
             $price: Int!
             $description: String!
-            $image: ImageInput!
+            $image: [ImageInput]
           ) {
             addPossession(
               possession: {
@@ -97,7 +103,7 @@ export default {
           }
         `,
         variables: {
-          image: 'test',
+          image: this.images,
           name: this.name,
           price: parseInt(this.price),
           description: this.description,
