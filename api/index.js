@@ -1,7 +1,15 @@
 require("dotenv").config();
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server-express");
+
 const { GraphQLScalarType } = require("graphql");
 const { Kind } = require("graphql/language");
+
+const express = require("express");
+const {
+  GraphQLUpload,
+  graphqlUploadExpress, // A Koa implementation is also exported.
+} = require("graphql-upload");
+const { finished } = require("stream/promises");
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -17,26 +25,19 @@ var possessionSchema = new mongoose.Schema({
   description: String,
   price: Number,
   images: [{ type: Schema.Types.ObjectId, ref: "Image" }],
-  location: String,
-  postedDate: Date,
 });
 
 var imageSchema = new mongoose.Schema({
-  description: String,
-  url: String,
+  filename: String,
+  mimetype: String,
+  encoding: String,
 });
 
 const Possession = mongoose.model("Possession", possessionSchema);
 const Image = mongoose.model("Image", imageSchema);
 
 const typeDefs = gql`
-  scalar Date
-
-  enum Location {
-    STORAGE_UNIT
-    BORROWED
-    APPARTMENT
-  }
+  scalar Upload
 
   type Possession {
     id: ID!
@@ -44,8 +45,6 @@ const typeDefs = gql`
     description: String
     price: Int
     images: [Image]
-    location: Location!
-    postedDate: Date
   }
 
   type Query {
@@ -54,28 +53,28 @@ const typeDefs = gql`
   }
 
   input ImageInput {
-    description: String
-    url: String
+    filename: String
+    mimetype: String
+    encoding: String
   }
 
   input PossessionInput {
     name: String!
     description: String
     price: Int!
-    location: Location!
-    postedDate: Date
     images: [ImageInput]
   }
 
   type Mutation {
     addPossession(possession: PossessionInput): [Possession]
-    addImage(image: ImageInput): [Image]
+    addImage(image: Upload!): [Image]
   }
 
   type Image {
     id: ID!
-    description: String
-    url: String!
+    filename: String
+    mimetype: String
+    encoding: String
   }
 `;
 
@@ -130,44 +129,53 @@ const resolvers = {
       }
       // create new id and date for possession getting added
     },
-  },
+    addImage: async (_obj, { image }, _context, _info) => {
+      try {
+        const { createReadStream, filename, mimetype, encoding } =
+          await image.file;
+        console.log("================");
+        console.log(image);
+        console.log("================");
+        console.log(createReadStream, filename, mimetype, encoding);
 
-  Date: new GraphQLScalarType({
-    name: "Date",
-    description: "It is a date",
-    parseValue(value) {
-      // value from the client
-      return new Date(value);
-    },
-    serialize(value) {
-      return value.getTime();
-    },
-    parseLiteral(ast) {
-      if (ast.kind === Kind.INT) {
-        return new Date(ast.value);
+        const stream = createReadStream();
+
+        // This is purely for demonstration purposes and will overwrite the
+        // local-file-output.txt in the current working directory on EACH upload.
+        const out = require("fs").createWriteStream(`uploads/${filename}`);
+        // const out = require("fs").createWriteStream(`upload.jpg`);
+        stream.pipe(out);
+        await finished(out);
+
+        return { filename, mimetype, encoding };
+      } catch (e) {
+        console.log(e);
+        return {};
       }
-      return null;
     },
-  }),
+  },
 };
 
 // pull out introspection true and playground true before real deploy
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  introspection: true,
-  playground: true,
-});
+async function startServer() {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true,
+    playground: true,
+  });
+  await server.start();
 
-db.on("error", console.error.bind(console), "connection error:");
-db.once("open", function () {
-  console.log("db is connected");
+  const app = express();
 
-  server
-    .listen({
-      port: process.env.PORT || 4000,
-    })
-    .then(({ url }) => {
-      console.log(`server started at ${url}`);
-    });
-});
+  // This middleware should be added before calling `applyMiddleware`.
+  app.use(graphqlUploadExpress());
+
+  server.applyMiddleware({ app });
+
+  await new Promise((r) => app.listen({ port: 4000 }, r));
+
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+}
+
+startServer();

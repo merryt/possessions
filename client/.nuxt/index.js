@@ -12,8 +12,8 @@ import { setContext, getLocation, getRouteData, normalizeError } from './utils'
 
 /* Plugins */
 
-import nuxt_plugin_plugin_1a3faf95 from 'nuxt_plugin_plugin_1a3faf95' // Source: .\\components\\plugin.js (mode: 'all')
-import nuxt_plugin_apollomodule_cf2ba1f8 from 'nuxt_plugin_apollomodule_cf2ba1f8' // Source: .\\apollo-module.js (mode: 'all')
+import nuxt_plugin_plugin_08cccfc9 from 'nuxt_plugin_plugin_08cccfc9' // Source: ./components/plugin.js (mode: 'all')
+import nuxt_plugin_apollomodule_c9bcc5aa from 'nuxt_plugin_apollomodule_c9bcc5aa' // Source: ./apollo-module.js (mode: 'all')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)
@@ -177,12 +177,12 @@ async function createApp(ssrContext, config = {}) {
   }
   // Plugin execution
 
-  if (typeof nuxt_plugin_plugin_1a3faf95 === 'function') {
-    await nuxt_plugin_plugin_1a3faf95(app.context, inject)
+  if (typeof nuxt_plugin_plugin_08cccfc9 === 'function') {
+    await nuxt_plugin_plugin_08cccfc9(app.context, inject)
   }
 
-  if (typeof nuxt_plugin_apollomodule_cf2ba1f8 === 'function') {
-    await nuxt_plugin_apollomodule_cf2ba1f8(app.context, inject)
+  if (typeof nuxt_plugin_apollomodule_c9bcc5aa === 'function') {
+    await nuxt_plugin_apollomodule_c9bcc5aa(app.context, inject)
   }
 
   // Lock enablePreview in context

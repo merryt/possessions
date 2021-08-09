@@ -27,12 +27,10 @@ export default {
         possessions {
           name
           description
-          location
           price
           id
           images {
-            description
-            url
+            id
           }
         }
       }

@@ -41,12 +41,10 @@ export default {
         possessions {
           name
           description
-          location
           price
           id
           images {
-            description
-            url
+            id
           }
         }
       }
@@ -59,7 +57,7 @@ export default {
 header {
   color: #fff;
   background: #090a0b no-repeat 50%;
-  background-image: url(http://travelsaveandbemerry.com/content/images/2017/01/cover-photo.jpg);
+  /* background-image: url(http://travelsaveandbemerry.com/content/images/2017/01/cover-photo.jpg); */
   position: relative;
   padding: 12px 4vw;
   background-size: cover;

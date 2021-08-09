@@ -2,24 +2,31 @@
   {
     "name": "possessions",
     "path": "/possessions",
-    "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\possessions.vue",
+    "component": "/home/test/possessions/client/pages/possessions.vue",
     "chunkName": "pages/possessions",
     "children": [
       {
+        "name": "possessions-add",
+        "path": "add",
+        "component": "/home/test/possessions/client/pages/possessions/add.vue",
+        "chunkName": "pages/possessions/add",
+        "_name": "_092f8850"
+      },
+      {
         "name": "possessions-id",
         "path": ":id?",
-        "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\possessions\\\\_id.vue",
+        "component": "/home/test/possessions/client/pages/possessions/_id.vue",
         "chunkName": "pages/possessions/_id",
-        "_name": "_4a94f72e"
+        "_name": "_b029662e"
       }
     ],
-    "_name": "_ddb2b0be"
+    "_name": "_5acf6384"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\bashHome\\\\possessions\\\\client\\\\pages\\\\index.vue",
+    "component": "/home/test/possessions/client/pages/index.vue",
     "chunkName": "pages/index",
-    "_name": "_3952db02"
+    "_name": "_7f8e0942"
   }
 ]

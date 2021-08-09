@@ -1,0 +1,129 @@
+<template>
+  <div class="inputContainer">
+    <label for="name">Item Name</label>
+    <input type="text" id="name" placeholder="Name" v-model="name" />
+    <label for="price">Item Price (0 for free)</label>
+    <input
+      type="number"
+      id="price"
+      placeholder="How many Doll Hairs we trying to get"
+      v-model="price"
+    />
+    <label for="description">Item Description</label>
+    <textarea
+      name="description"
+      id="description"
+      cols="30"
+      rows="10"
+      placeholder="Description"
+      v-model="description"
+    ></textarea>
+    <div class="images">
+      <input
+        v-for="image in images"
+        v-bind:key="image"
+        @change="upload"
+        type="file"
+      />
+    </div>
+    <button @click="images += 1">add image</button>
+    <input @change="upload" type="file" />
+    <button @click="addPossession" class="bigBtn">Submit</button>
+  </div>
+</template>
+
+<script>
+import gql from 'graphql-tag'
+
+export default {
+  data() {
+    return {
+      images: 1,
+      name: '',
+      description: '',
+      price: '',
+    }
+  },
+  methods: {
+    upload({ target: { files = [] } }) {
+      if (!files.length) {
+        return
+      }
+      console.log(files)
+
+      this.$apollo.mutate({
+        mutation: gql`
+          mutation uploadPhoto($image: Upload!) {
+            addImage(image: $image) {
+              id
+            }
+          }
+        `,
+        variables: {
+          image: files[0],
+        },
+        context: {
+          hasUpload: true,
+        },
+      })
+    },
+    addPossession() {
+      this.$apollo.mutate({
+        mutation: gql`
+          mutation createPossession(
+            $name: String!
+            $price: Int!
+            $description: String!
+            $image: ImageInput!
+          ) {
+            addPossession(
+              possession: {
+                name: $name
+                price: $price
+                description: $description
+                images: $image
+              }
+            ) {
+              name
+              price
+              description
+            }
+          }
+        `,
+        variables: {
+          image: 'test',
+          name: this.name,
+          price: parseInt(this.price),
+          description: this.description,
+        },
+        context: {
+          hasUpload: true,
+        },
+      })
+      return true
+    },
+  },
+}
+</script>
+
+<style scoped>
+.inputContainer,
+.images {
+  display: flex;
+  flex-direction: column;
+}
+
+.images > *,
+.inputContainer > * {
+  margin-bottom: 10px;
+}
+
+.bigBtn {
+  width: 100%;
+  margin-top: 10px;
+  background-color: aquamarine;
+  outline: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+</style>
